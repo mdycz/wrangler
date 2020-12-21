@@ -1,12 +1,14 @@
+mod durable_objects;
 mod schedule;
 mod zoned;
 mod zoneless;
 
+pub use durable_objects::DurableObjectsTarget;
 pub use schedule::ScheduleTarget;
 pub use zoned::ZonedTarget;
 pub use zoneless::ZonelessTarget;
 
-use crate::settings::global_user::GlobalUser;
+use crate::settings::{global_user::GlobalUser, toml::Target};
 
 /// A set of deploy targets.
 pub type DeploymentSet = Vec<DeployTarget>;
@@ -16,9 +18,24 @@ pub enum DeployTarget {
     Zoned(ZonedTarget),
     Zoneless(ZonelessTarget),
     Schedule(ScheduleTarget),
+    DurableObjects(DurableObjectsTarget),
 }
 
-pub fn worker(
+pub fn pre_upload(
+    user: &GlobalUser,
+    target: &mut Target,
+    deploy_targets: &[DeployTarget],
+) -> Result<(), failure::Error> {
+    for deploy_target in deploy_targets {
+        if let DeployTarget::DurableObjects(durable_objects) = deploy_target {
+            durable_objects.pre_upload(user, target)?;
+        }
+    }
+
+    Ok(())
+}
+
+pub fn deploy(
     user: &GlobalUser,
     deploy_targets: &[DeployTarget],
 ) -> Result<DeployResults, failure::Error> {
@@ -37,6 +54,10 @@ pub fn worker(
                 let schedules = schedule.deploy(user)?;
                 results.schedules.extend(schedules);
             }
+            DeployTarget::DurableObjects(durable_objects) => {
+                let namespaces = durable_objects.deploy(user)?;
+                results.durable_object_namespaces.extend(namespaces);
+            }
         }
     }
 
@@ -47,4 +68,5 @@ pub fn worker(
 pub struct DeployResults {
     pub urls: Vec<String>,
     pub schedules: Vec<String>,
+    pub durable_object_namespaces: Vec<String>,
 }
