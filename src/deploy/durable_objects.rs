@@ -252,7 +252,7 @@ fn create_ns(
 
     if !res.status().is_success() {
         failure::bail!(
-            "Something went wrong! Status: {}, Details {}, body: {:?}",
+            "Failed to create a Durable Object namespace! Status: {}, Details {}, Body: {:?}",
             res.status(),
             res.text()?,
             body
@@ -287,7 +287,7 @@ fn update_ns(
 
     if !res.status().is_success() {
         failure::bail!(
-            "Something went wrong! Status: {}, Details {}, body: {:?}",
+            "Failed to update a Durable Object namespace! Status: {}, Details {}, Body: {:?}",
             res.status(),
             res.text()?,
             body
@@ -344,7 +344,7 @@ fn list_namespaces(
 
     if !res.status().is_success() {
         failure::bail!(
-            "Something went wrong! Status: {}, Details {}",
+            "Failed to list Durable Object namespaces! Status: {}, Details {}",
             res.status(),
             res.text()?
         )

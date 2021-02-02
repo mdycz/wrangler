@@ -26,7 +26,7 @@ pub fn build_target(target: &Target) -> Result<String, failure::Error> {
                         Ok(String::from("Build completed successfully!"))
                     } else if let Some(code) = build_result.code() {
                         Err(failure::err_msg(format!(
-                            "Build failed with status code {}",
+                            "Build failed! Status Code: {}",
                             code
                         )))
                     } else {

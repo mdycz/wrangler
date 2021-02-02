@@ -141,7 +141,7 @@ fn build_output_message(deploy_results: deploy::DeployResults, target_name: Stri
     }
     if !durable_object_namespaces.is_empty() {
         msg.push_str(&format!(
-            "implementing these durable object namespaces\n {}\n",
+            "implementing these Durable Object namespaces\n {}\n",
             durable_object_namespaces.join("\n ")
         ));
     }
